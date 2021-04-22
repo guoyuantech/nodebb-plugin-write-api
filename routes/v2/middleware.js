@@ -8,6 +8,7 @@ const passport = require.main.require('passport');
 const nconf = require.main.require('nconf');
 
 const user = require.main.require('./src/user');
+const Users = require.main.require('./src/user');
 const groups = require.main.require('./src/groups');
 const posts = require.main.require('./src/posts');
 const topics = require.main.require('./src/topics');
@@ -106,9 +107,16 @@ Middleware.requireUser = async function (req, res, next) {
 					));
 				}
 
+				Users.updateProfile(decoded._uid, { uid: decoded._uid, username: decoded.name }, function(err) {
+					const groupsToJoin = ['registered-users'];
+					groups.join(groupsToJoin, decoded._uid),
+					console.log('updateProfile for _ud ' + decoded._uid, err ?? " succeeded.");
+				});
+
 				req.login({
 					uid: decoded._uid,
 				}, function (err) {
+					console.log(err);
 					if (err) { return errorHandler.respond(500, res); }
 
 					req.uid = decoded._uid;
